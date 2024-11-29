@@ -112,10 +112,14 @@ def action(n,sign,value,log):#１手進める
 
     return (value,log)
 
-def onehand(hand):#手順listを１つ進める
+par = 0
+def onehand(hand=[],D=0):#手順listを１つ進める
+    global par
     n = len(hand) - 1
     p = [0,0]
     do = True
+    if p == [len(hand),0]:
+            return "end"
     while do:
         if p[1] == 0:
             if hand[p[0]][0] == 3:
@@ -123,14 +127,25 @@ def onehand(hand):#手順listを１つ進める
                 p[1] += 1
             else:
                 hand[p[0]][0] += 1
-                """
-                for i in hand:
-                    if i[0] == 0 or i[0] == 2:
-                        if i[1] <= i[2]:
-                            print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
-                            return onehand(hand[:])
-                print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
-                """
+                #"""
+                if D < 500:
+                    for i in hand:
+                        if i[0] == 0 or i[0] == 2:
+                            if i[1] <= i[2]:
+                                rpar = 0
+                                for j in hand:
+                                    rpar += sum(j)
+                                if rpar > par:
+                                    par = rpar
+                                    print(par*100//(len(hand)**2 + 3*len(hand)))
+                                return onehand(hand[:],D+1)
+                #"""
+                rpar = 0
+                for j in hand:
+                    rpar += sum(j)
+                if rpar > par:
+                    par = rpar
+                    print(par*100//(len(hand)**2 + 3*len(hand)))
                 return hand
         else:
             if n < hand[p[0]][p[1]]:
@@ -142,14 +157,26 @@ def onehand(hand):#手順listを１つ進める
                     p = [p[0]+1,0]
             else:
                 hand[p[0]][p[1]] += 1
-                """
-                for i in hand:
-                    if i[0] == 0 or i[0] == 2:
-                        if i[1] <= i[2]:
-                            print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
-                            return onehand(hand[:])
-                print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
-                """
+                #"""
+                #print(hand)
+                if D < 500:
+                    for i in hand:
+                        if i[0] == 0 or i[0] == 2:
+                            if i[1] <= i[2]:
+                                rpar = 0
+                                for j in hand:
+                                    rpar += sum(j)
+                                if rpar > par:
+                                    par = rpar
+                                    print(par*100//(len(hand)**2 + 3*len(hand)))
+                                return onehand(hand[:],D+1)
+                #"""
+                rpar = 0
+                for j in hand:
+                    rpar += sum(j)
+                if rpar > par:
+                    par = rpar
+                    print(par*100//(len(hand)**2 + 3*len(hand)))
                 return hand
 
         if p == [len(hand),0]:
@@ -168,6 +195,7 @@ def doall(hand,log):#手順を一通り実行
         log = keep[1]
     return (value,log)
 
+#"""
 goal = input("goal number ")
 goal = int2frac(int(goal))
 nlist = input("can use numbers(Separated by spaces) ")
@@ -189,4 +217,4 @@ else:
     for i in result:
         print(i)
     print(str(len(result))+ " ways")
-
+#"""
