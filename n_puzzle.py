@@ -263,7 +263,7 @@ if result == []:
     print("nothing")
 else:
     for i in result:
-        print(i)
+        print(i,"=",goal[:-2])
     print(str(len(result))+ " ways")
 print("Tiem:" + timish(now))
 #"""
