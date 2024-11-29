@@ -9,6 +9,9 @@
 除算 割る数を逆数にして乗算
 """
 
+import math
+import time
+
 def int2frac(self):#int型を分数を表すstr型に
     if self == "":
         return "0/1"
@@ -88,6 +91,31 @@ def divfrac(self,self2):#分数の割り算
 3 ÷
 """
 
+#smhDWMY
+def timish(self):#秒時間をわかりやすく変換する
+    if self < 60:
+        keep = str(int(self//1))
+        while len(keep) < 2:
+            keep = "0" + keep
+        return "00m." + keep + "s"
+    ls = ["s","m","h","D","W","M","Y"]
+    tls = [1,60,3600,86400,86400*7,86400*30,86400*365.25]
+    n = 1
+    while self > tls[n]:
+        n += 1
+    n -= 1
+    keep = int(self//tls[n])
+    keep = str(keep)
+    while len(keep) < 2:
+        keep = "0" + keep
+    out = keep + ls[n] + "."
+    keep = str(int((self%tls[n])//tls[n-1]))
+    while len(keep) < 2:
+        keep = "0" + keep
+    out = out + keep + ls[n-1]
+    return out
+
+
 def action(n,sign,value,log):#１手進める
     sls = ["+","-","×","÷"]
     self1 = value.pop(n[0])
@@ -112,14 +140,44 @@ def action(n,sign,value,log):#１手進める
 
     return (value,log)
 
+upar = 0
+dpar = 0
 par = 0
+start = time.time()
+now = 0
 def onehand(hand=[],D=0):#手順listを１つ進める
+    global upar
+    global dpar
     global par
+    global start
+
     n = len(hand) - 1
+
+    upar += 1
+    if dpar == 0:
+        dpar = math.factorial(n+1) * math.factorial(n+2) * 4 ** (n+1)
+    
     p = [0,0]
     do = True
     if p == [len(hand),0]:
             return "end"
+
+    def printpar():
+        global upar
+        global dpar
+        global par
+        global start
+        global now
+        if upar*1000//dpar > par*10:
+            par = (upar*1000//dpar)/10
+            now = time.time() - start
+            strpar = str(par)
+            while len(strpar) < len("99.9"):
+                strpar = "0" + strpar
+            strpar = strpar + "%"
+            print(strpar,"  passed:",timish(now),"  maybe:",timish(now*dpar/upar-now))
+
+
     while do:
         if p[1] == 0:
             if hand[p[0]][0] == 3:
@@ -132,20 +190,10 @@ def onehand(hand=[],D=0):#手順listを１つ進める
                     for i in hand:
                         if i[0] == 0 or i[0] == 2:
                             if i[1] <= i[2]:
-                                rpar = 0
-                                for j in hand:
-                                    rpar += sum(j)
-                                if rpar > par:
-                                    par = rpar
-                                    print(par*100//(len(hand)**2 + 3*len(hand)))
+                                printpar()
                                 return onehand(hand[:],D+1)
                 #"""
-                rpar = 0
-                for j in hand:
-                    rpar += sum(j)
-                if rpar > par:
-                    par = rpar
-                    print(par*100//(len(hand)**2 + 3*len(hand)))
+                printpar()
                 return hand
         else:
             if n < hand[p[0]][p[1]]:
@@ -163,23 +211,14 @@ def onehand(hand=[],D=0):#手順listを１つ進める
                     for i in hand:
                         if i[0] == 0 or i[0] == 2:
                             if i[1] <= i[2]:
-                                rpar = 0
-                                for j in hand:
-                                    rpar += sum(j)
-                                if rpar > par:
-                                    par = rpar
-                                    print(par*100//(len(hand)**2 + 3*len(hand)))
+                                printpar()
                                 return onehand(hand[:],D+1)
                 #"""
-                rpar = 0
-                for j in hand:
-                    rpar += sum(j)
-                if rpar > par:
-                    par = rpar
-                    print(par*100//(len(hand)**2 + 3*len(hand)))
+                printpar()
                 return hand
 
         if p == [len(hand),0]:
+            #print(upar,dpar)
             return "end"
 
 def doall(hand,log):#手順を一通り実行
@@ -217,4 +256,5 @@ else:
     for i in result:
         print(i)
     print(str(len(result))+ " ways")
+print("Tiem:" + timish(now))
 #"""

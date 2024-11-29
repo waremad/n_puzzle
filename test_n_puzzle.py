@@ -55,6 +55,14 @@ def test_divfrac():
     assert divfrac("-5/3","7/9") == "-15/7"
 
 
+def test_timish():
+    assert timish(0.5) == "00m.00s"
+    assert timish(1) == "00m.01s"
+    assert timish(59) == "00m.59s"
+    assert timish(77) == "01m.17s"
+    assert timish(3005) == "50m.05s"
+    assert timish(3725) == "01h.02m"
+
 def test_aaction():
     sign = ["+","-","×","÷"]
     ls = ["2/1","1/2","2/3","4/3","5/1"]
