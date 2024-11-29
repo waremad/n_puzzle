@@ -143,9 +143,12 @@ def action(n,sign,value,log):#１手進める
 upar = 0
 dpar = 0
 par = 0
-start = time.time()
+start = 0
 now = 0
 def onehand(hand=[],D=0):#手順listを１つ進める
+    if hand == []:
+        return "end"
+
     global upar
     global dpar
     global par
@@ -238,7 +241,12 @@ def doall(hand,log):#手順を一通り実行
 goal = input("goal number ")
 goal = int2frac(int(goal))
 nlist = input("can use numbers(Separated by spaces) ")
+start = time.time()
 log = nlist.split(" ")
+while log[0] == "":
+    log.pop(0)
+while log[-1] == "":
+    log.pop(-1)
 hand = []
 for i in range(len(log)-1):
     hand.append([0,0,0])
@@ -248,6 +256,7 @@ while not(hand == "end"):
     keep = doall(hand,log[:])
     if keep[0][0] == goal:
         result.append(keep[1][0])
+        hand = []
     hand = onehand(hand)
 
 if result == []:
