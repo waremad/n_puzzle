@@ -24,7 +24,7 @@ def str2frac(self):#/区切りのstr型をlistに
     return out
 
 def redufrac(self):#約分
-    if self == "" or self[0] == "0" or self[:2] == "-0":
+    if self == "" or self[0] == "0" or self[:2] == "-0" or self[-1] == "0" or self[-2:] == "-0":
         return "0/1"
     self = str2frac(self)
     if self[0] < 0:
@@ -76,4 +76,117 @@ def divfrac(self,self2):#分数の割り算
         self2[i] = str(self2[i])
     self2 = "/".join(self2)
     return mulfrac(self,self2)
+
+"""
+手順を示したlist[[0,0,0],[0,0,0]]
+式を示したlist
+値を示したlist
+
+0 +
+1 -
+2 ×
+3 ÷
+"""
+
+def action(n,sign,value,log):#１手進める
+    sls = ["+","-","×","÷"]
+    self1 = value.pop(n[0])
+    log1 = log.pop(n[0])
+    self2 = value.pop(n[1])
+    log2 = log.pop(n[1])
+
+    if sign == sls[0]:
+        out = addfrac(self1,self2)
+    elif sign == sls[1]:
+        out = subfrac(self1,self2)
+    elif sign == sls[2]:
+        out = mulfrac(self1,self2)
+    elif sign == sls[3]:
+        out = divfrac(self1,self2)
+    else:
+        return "??action??","??action??"
+    
+    value.append(out)
+    out = "(" + log1 + " " + sign + " " + log2 + ")"
+    log.append(out)
+
+    return (value,log)
+
+def onehand(hand):#手順listを１つ進める
+    n = len(hand) - 1
+    p = [0,0]
+    do = True
+    while do:
+        if p[1] == 0:
+            if hand[p[0]][0] == 3:
+                hand[p[0]][0] = 0
+                p[1] += 1
+            else:
+                hand[p[0]][0] += 1
+                """
+                for i in hand:
+                    if i[0] == 0 or i[0] == 2:
+                        if i[1] <= i[2]:
+                            print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
+                            return onehand(hand[:])
+                print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
+                """
+                return hand
+        else:
+            if n < hand[p[0]][p[1]]:
+                hand[p[0]][p[1]] = 0
+                if p[1] == 1:
+                    p[1] += 1
+                    n -= 1
+                else:
+                    p = [p[0]+1,0]
+            else:
+                hand[p[0]][p[1]] += 1
+                """
+                for i in hand:
+                    if i[0] == 0 or i[0] == 2:
+                        if i[1] <= i[2]:
+                            print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
+                            return onehand(hand[:])
+                print(((len(hand) - 1 - n)*100)//(len(hand) - 1))
+                """
+                return hand
+
+        if p == [len(hand),0]:
+            return "end"
+
+def doall(hand,log):#手順を一通り実行
+    sign = ["+","-","×","÷"]
+    value = []
+    for i in range(len(log)):
+        value.append(int2frac(log[i]))
+        log[i] = str(log[i])
+    
+    for i in hand:
+        keep = action(i[1:],sign[i[0]],value,log)
+        value = keep[0]
+        log = keep[1]
+    return (value,log)
+
+goal = input("goal number ")
+goal = int2frac(int(goal))
+nlist = input("can use numbers(Separated by spaces) ")
+log = nlist.split(" ")
+hand = []
+for i in range(len(log)-1):
+    hand.append([0,0,0])
+result = []
+
+while not(hand == "end"):
+    keep = doall(hand,log[:])
+    if keep[0][0] == goal:
+        result.append(keep[1][0])
+    hand = onehand(hand)
+
+if result == []:
+    print("nothing")
+else:
+    for i in result:
+        print(i)
+    print(str(len(result))+ " ways")
 
